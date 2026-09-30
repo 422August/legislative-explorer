@@ -140,6 +140,48 @@ export function formatDate(val) {
   return str.slice(0, 10);
 }
 
+export function normalizeAttachmentUrl(url) {
+  if (!url) return '';
+  let u = String(url).trim();
+  if (u.startsWith('//')) {
+    return 'https:' + u;
+  }
+  if (u.startsWith('http://')) {
+    return u.replace(/^http:\/\//, 'https://');
+  }
+  if (u.startsWith('https://')) {
+    return u;
+  }
+  // Relative paths from ppg.ly.gov.tw (e.g. /ppg/bills/... or ppg/bills/...)
+  if (u.startsWith('/ppg/') || u.startsWith('ppg/')) {
+    return 'https://ppg.ly.gov.tw/' + u.replace(/^\/+/, '');
+  }
+  if (u.startsWith('/')) {
+    return 'https://ppg.ly.gov.tw' + u;
+  }
+  return 'https://ppg.ly.gov.tw/' + u;
+}
+
+export function getAttachmentInfo(att) {
+  const rawUrl = att['網址'] || att.url || '';
+  const url = normalizeAttachmentUrl(rawUrl);
+  const name = String(att['名稱'] || att.name || '關係文書').trim();
+
+  const lowerUrl = url.toLowerCase();
+  const lowerName = name.toLowerCase();
+  const isDoc = lowerUrl.endsWith('.pdf') || lowerUrl.endsWith('.doc') || lowerUrl.endsWith('.docx') ||
+                lowerUrl.endsWith('.odt') || lowerName.includes('pdf') || lowerName.includes('doc');
+
+  let label = '';
+  if (isDoc) {
+    label = name.startsWith('下載') ? name : `下載 ${name}`;
+  } else {
+    label = (name.startsWith('檢視') || name.startsWith('查看')) ? name : `檢視 ${name}`;
+  }
+
+  return { url, label, isDoc };
+}
+
 export function createElement(tag, attrs = {}, children = []) {
   const el = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {

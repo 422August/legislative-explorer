@@ -1,6 +1,6 @@
 // js/pages/bill-detail.js
 import { api } from '../api.js';
-import { getTermMeta, createElement, formatDate } from '../utils.js';
+import { getTermMeta, createElement, formatDate, getAttachmentInfo, normalizeAttachmentUrl } from '../utils.js';
 import { showToast } from '../components/toast.js';
 
 export async function renderBillDetail({ term, billNo }) {
@@ -132,25 +132,39 @@ async function renderBillContent(container, bill, term, billNo) {
     cosignTd
   ]));
 
-  // Row 6: 附件下載
+  // Row 6: 附件與審查歷程下載
   const attachments = bill['相關附件'] || [];
-  if (attachments.length > 0) {
+  if (attachments.length > 0 || bill['url']) {
     const attTd = createElement('td', { colSpan: '3' });
     const attRow = createElement('div', { style: 'display: flex; gap: 8px; flex-wrap: wrap;' });
+    
     attachments.forEach(att => {
-      if (att['網址']) {
+      const info = getAttachmentInfo(att);
+      if (info.url) {
         attRow.appendChild(createElement('a', {
-          href: att['網址'],
+          href: info.url,
           target: '_blank',
           rel: 'noopener noreferrer',
           className: 'btn btn-sm',
-          text: `下載 ${att['名稱'] || '關係文書'}`
+          text: info.label
         }));
       }
     });
+
+    if (bill['url']) {
+      const officialUrl = normalizeAttachmentUrl(bill['url']);
+      attRow.appendChild(createElement('a', {
+        href: officialUrl,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        className: 'btn btn-sm',
+        text: '立法院議政網審議流程'
+      }));
+    }
+
     attTd.appendChild(attRow);
     tbody.appendChild(createElement('tr', {}, [
-      createElement('th', { text: '關係文書附件' }),
+      createElement('th', { text: '關係文書與審查' }),
       attTd
     ]));
   }

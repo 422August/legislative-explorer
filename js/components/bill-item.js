@@ -1,5 +1,5 @@
 // js/components/bill-item.js
-import { createElement, formatDate } from '../utils.js';
+import { createElement, formatDate, getAttachmentInfo } from '../utils.js';
 
 export function createBillItem(bill, term) {
   const item = createElement('div', {
@@ -54,13 +54,14 @@ export function createBillItem(bill, term) {
 
   const attachments = bill['相關附件'] || [];
   attachments.forEach(att => {
-    if (att['網址']) {
+    const info = getAttachmentInfo(att);
+    if (info.url) {
       actionsRow.appendChild(createElement('a', {
-        href: att['網址'],
+        href: info.url,
         target: '_blank',
         rel: 'noopener noreferrer',
         className: 'btn btn-sm',
-        text: `下載 ${att['名稱'] || '關係文書'}`
+        text: info.label
       }));
     }
   });
