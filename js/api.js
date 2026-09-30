@@ -149,11 +149,36 @@ class ApiClient {
     return data;
   }
 
-  async searchBills({ query = '', term = '', page = 1, limit = 20 }) {
-    const params = new URLSearchParams();
-    if (query && query.trim()) {
-      params.append('q', query.trim());
+  formatSearchQuery(rawQuery) {
+    if (!rawQuery) return '';
+    const trimmed = rawQuery.trim();
+    if (!trimmed) return '';
+
+    // If user already typed quotes, preserve their query syntax
+    if (trimmed.includes('"')) {
+      return trimmed;
     }
+
+    // Split words by whitespace
+    const words = trimmed.split(/\s+/).filter(Boolean);
+    if (words.length === 1) {
+      return `"${words[0]}"`;
+    }
+    // Multiple terms: wrap each in quotes with AND operator for high precision
+    return words.map(w => `"${w}"`).join(' AND ');
+  }
+
+  async searchBills({ query = '', term = '', page = 1, limit = 20 }) {
+    const rawTrimmed = (query || '').trim();
+    const params = new URLSearchParams();
+
+    // Check if query is an exact bill number (10 to 16 digits)
+    if (/^\d{10,16}$/.test(rawTrimmed)) {
+      params.append('議案編號', rawTrimmed);
+    } else if (rawTrimmed) {
+      params.append('q', this.formatSearchQuery(rawTrimmed));
+    }
+
     if (term) {
       params.append('屆', term);
     }

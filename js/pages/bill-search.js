@@ -64,13 +64,14 @@ export async function renderBillSearch({ searchParams = '' }) {
     queryInput
   ]);
 
-  // Term Select Filter (Terms 11 down to 2; Term 1 explained separately)
+  // Term Select Filter (Digital archives cover Term 5 to 11; Terms 1-4 are paper/microfilm)
   const termOptions = [
-    createElement('option', { value: '', text: '全部屆次 (第2～11屆)' }),
+    createElement('option', { value: '', text: '全部屆次 (第5～11屆數位全宗)' }),
     ...TERM_DATES.filter(t => t.term >= 2).sort((a, b) => b.term - a.term).map(t => {
+      const isHistoricalOnly = t.term < 5;
       const opt = createElement('option', {
         value: String(t.term),
-        text: `${t.name} (${t.years})${t.current ? ' - 現任' : ''}`
+        text: `${t.name} (${t.years})${t.current ? ' - 現任' : ''}${isHistoricalOnly ? ' [紙本微縮典藏]' : ''}`
       });
       if (String(t.term) === state.term) opt.selected = true;
       return opt;
@@ -169,9 +170,20 @@ export async function renderBillSearch({ searchParams = '' }) {
     countStat.textContent = `共計 ${total.toLocaleString()} 筆審議案件`;
 
     if (bills.length === 0) {
+      let emptyTitle = '查無符合條件之法律議案';
+      let emptyDesc = '請嘗試減少關鍵字字元、檢查議案字號，或切換至「全部屆次」擴大檢索範圍。';
+
+      if (state.term && parseInt(state.term, 10) < 5) {
+        emptyTitle = `第 ${state.term} 屆紙本典藏檔案說明`;
+        emptyDesc = `立法院第 ${state.term} 屆之法律提案與關係文書收錄於立法院公報典藏系統與國會圖書館歷史問政檔案，開放資料 API 自第 5 屆起提供數位結構化資料。請切換至第 5～11 屆檢索數位法律案。`;
+      } else if (state.query) {
+        emptyTitle = `查無包含「${state.query}」之法律議案`;
+        emptyDesc = '建議檢查關鍵字是否有錯別字，或嘗試以更簡短的法條簡稱、提案人姓名進行搜尋。';
+      }
+
       contentArea.appendChild(createElement('div', { className: 'empty-state' }, [
-        createElement('div', { className: 'empty-title', text: '查無符合條件之法律議案' }),
-        createElement('div', { className: 'empty-desc', text: '請嘗試減少關鍵字字元、檢查議案字號，或切換至「全部屆次」擴大檢索範圍。' })
+        createElement('div', { className: 'empty-title', text: emptyTitle }),
+        createElement('div', { className: 'empty-desc', text: emptyDesc })
       ]));
       return;
     }
