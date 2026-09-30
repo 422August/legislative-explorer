@@ -1,0 +1,662 @@
+/* Components CSS - Parliamentary Registry & Research Database Aesthetic */
+
+/* Buttons - Sharp, Utilitarian, Flat */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: 5px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  text-decoration: none;
+  background-color: var(--color-bg-hover);
+  border-color: var(--color-border-dark);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: #ffffff;
+}
+
+.btn-sm {
+  padding: 3px 8px;
+  font-size: var(--font-size-xs);
+}
+
+/* Subtle Institutional Tags (No colorful pill bubbles) */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.tag-primary {
+  border-color: #93c5fd;
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.tag-warning {
+  border-color: var(--color-warning-border);
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.tag-neutral {
+  border-color: var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text-secondary);
+}
+
+/* Notice / Archival Note Boxes */
+.notice-box {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  background-color: var(--color-bg-card);
+  margin-bottom: var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.notice-box-title {
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+/* Breadcrumbs */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.breadcrumb a {
+  color: var(--color-text-secondary);
+}
+
+.breadcrumb a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  color: var(--color-border-dark);
+}
+
+/* Page Header */
+.page-header {
+  margin-bottom: var(--space-5);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.page-title {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.page-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* Home Terms Index - Structured Archival Directory Table */
+.terms-table-container {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+  margin-bottom: var(--space-8);
+}
+
+.terms-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.terms-table th {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.terms-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: middle;
+}
+
+.terms-table tbody tr:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.terms-table tbody tr.is-current {
+  background-color: #f0fdf4;
+}
+
+[data-theme="dark"] .terms-table tbody tr.is-current {
+  background-color: #052e16;
+}
+
+.terms-table .term-name-cell {
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+  font-size: var(--font-size-base);
+}
+
+.terms-table .term-years-cell {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.terms-table .term-seats-cell {
+  font-family: var(--font-family-mono);
+  white-space: nowrap;
+}
+
+.terms-table .term-desc-cell {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  min-width: 280px;
+}
+
+/* Query Toolbar (Filter & Search) - Academic Tool Style */
+.query-toolbar {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.query-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.query-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.query-input {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  min-width: 200px;
+  flex: 1;
+}
+
+.query-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-card);
+}
+
+.query-select {
+  padding: 5px 24px 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%234a5568' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.query-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.query-count-stat {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-left: auto;
+  white-space: nowrap;
+  font-family: var(--font-family-mono);
+}
+
+/* Legislator Roster Catalog Grid */
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.roster-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition);
+}
+
+.roster-card:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-bg-hover);
+  text-decoration: none;
+}
+
+.roster-card-photo {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background-color: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+  position: relative;
+}
+
+.roster-card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.roster-card-body {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+}
+
+.roster-card-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.roster-card-name {
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.roster-card-meta {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.roster-card-party {
+  font-weight: 600;
+}
+
+.roster-card-area {
+  color: var(--color-text-muted);
+}
+
+/* Official Member Dossier Sheet */
+.dossier-sheet {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  margin-bottom: var(--space-6);
+}
+
+.dossier-header-bar {
+  background-color: var(--color-bg-subtle);
+  border-bottom: 1px solid var(--color-border);
+  padding: 8px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.dossier-main-content {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--space-5);
+  padding: var(--space-5);
+}
+
+.dossier-photo-frame {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-subtle);
+  overflow: hidden;
+}
+
+.dossier-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dossier-data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.dossier-data-table th {
+  width: 110px;
+  text-align: right;
+  padding: 6px 12px;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border-subtle);
+  white-space: nowrap;
+}
+
+.dossier-data-table td {
+  padding: 6px 12px;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border-subtle);
+  line-height: 1.5;
+}
+
+.dossier-sections-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: 0 var(--space-5) var(--space-5);
+}
+
+.dossier-subpanel {
+  border: 1px solid var(--color-border-subtle);
+  background-color: var(--color-bg);
+  padding: var(--space-3) var(--space-4);
+}
+
+.dossier-subpanel-title {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 3px;
+}
+
+.dossier-list {
+  list-style: square;
+  padding-left: 18px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* Archival Activity Register Tabs */
+.register-tabs-nav {
+  display: flex;
+  border-bottom: 2px solid var(--color-border);
+  margin-bottom: var(--space-4);
+  overflow-x: auto;
+}
+
+.register-tab-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  padding: 8px 16px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: -2px;
+  border-top-left-radius: var(--radius-sm);
+  border-top-right-radius: var(--radius-sm);
+}
+
+.register-tab-btn:hover {
+  color: var(--color-primary);
+  background-color: var(--color-bg-hover);
+}
+
+.register-tab-btn.active {
+  color: var(--color-primary);
+  background-color: var(--color-bg-card);
+  border-color: var(--color-border);
+  border-top: 3px solid var(--color-primary);
+  border-bottom: 2px solid var(--color-bg-card);
+}
+
+.register-tab-count {
+  font-size: var(--font-size-xs);
+  font-family: var(--font-family-mono);
+  color: var(--color-text-muted);
+}
+
+.register-tab-btn.active .register-tab-count {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Research Records Table / Gazette List */
+.records-table-container {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+  margin-bottom: var(--space-5);
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+.records-table th {
+  background-color: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.records-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  vertical-align: top;
+  line-height: 1.5;
+}
+
+.records-table tbody tr:hover {
+  background-color: var(--color-bg-hover);
+}
+
+.record-date-cell {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+}
+
+.record-id-cell {
+  font-family: var(--font-family-mono);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  font-size: var(--font-size-xs);
+}
+
+.record-title-cell {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.record-title-cell a {
+  color: var(--color-text);
+}
+
+.record-title-cell a:hover {
+  color: var(--color-primary);
+}
+
+.record-meta-cell {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+.record-actions-cell {
+  white-space: nowrap;
+}
+
+/* Pagination - Academic Catalog Style */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2px;
+  margin: var(--space-6) 0;
+}
+
+.page-btn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background-color: var(--color-bg-card);
+  color: var(--color-text);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  font-family: var(--font-family-mono);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.page-btn:hover:not(:disabled) {
+  border-color: var(--color-border-dark);
+  background-color: var(--color-bg-hover);
+}
+
+.page-btn.active {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background-color: var(--color-bg-subtle);
+}
+
+/* Clean Empty State - Not playful, strictly informative */
+.empty-state {
+  text-align: center;
+  padding: var(--space-8) var(--space-4);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  margin: var(--space-4) 0;
+}
+
+.empty-title {
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.empty-desc {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Skeleton Loading - Neutral Gray Pulse */
+.skeleton {
+  background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-subtle) 50%, var(--color-bg-subtle) 75%);
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.2s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-text {
+  height: 12px;
+  margin-bottom: 6px;
+  width: 100%;
+}
+
+.skeleton-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  height: 240px;
+}

@@ -1,0 +1,19 @@
+{
+  "中國國民黨": { "color": "#000095", "badgeColor": "#e8eaf6", "textColor": "#000095", "abbr": "國民黨" },
+  "國民黨": { "color": "#000095", "badgeColor": "#e8eaf6", "textColor": "#000095", "abbr": "國民黨" },
+  "民主進步黨": { "color": "#1B9431", "badgeColor": "#e8f5e9", "textColor": "#1B9431", "abbr": "民進黨" },
+  "民進黨": { "color": "#1B9431", "badgeColor": "#e8f5e9", "textColor": "#1B9431", "abbr": "民進黨" },
+  "台灣民眾黨": { "color": "#28C8C8", "badgeColor": "#e0f7f7", "textColor": "#0e8787", "abbr": "民眾黨" },
+  "民眾黨": { "color": "#28C8C8", "badgeColor": "#e0f7f7", "textColor": "#0e8787", "abbr": "民眾黨" },
+  "時代力量": { "color": "#F39C12", "badgeColor": "#fef9e7", "textColor": "#b7791f", "abbr": "時代力量" },
+  "親民黨": { "color": "#FF6310", "badgeColor": "#fff3e0", "textColor": "#e65100", "abbr": "親民黨" },
+  "台灣團結聯盟": { "color": "#A0522D", "badgeColor": "#efebe9", "textColor": "#5d4037", "abbr": "台聯" },
+  "新黨": { "color": "#FFD700", "badgeColor": "#fffde7", "textColor": "#f57f17", "abbr": "新黨" },
+  "無黨團結聯盟": { "color": "#800000", "badgeColor": "#fbe9e7", "textColor": "#bf360c", "abbr": "無盟" },
+  "無黨籍": { "color": "#78909c", "badgeColor": "#eceff1", "textColor": "#455a64", "abbr": "無黨籍" },
+  "無黨籍/資料闕如": { "color": "#78909c", "badgeColor": "#eceff1", "textColor": "#455a64", "abbr": "無黨籍" },
+  "中國青年黨": { "color": "#00838f", "badgeColor": "#e0f7fa", "textColor": "#006064", "abbr": "青年黨" },
+  "中國民主社會黨": { "color": "#6a1b9a", "badgeColor": "#f3e5f5", "textColor": "#4a148c", "abbr": "民社黨" },
+  "綠黨性別友善聯盟": { "color": "#2e7d32", "badgeColor": "#e8f5e9", "textColor": "#1b5e20", "abbr": "綠黨" },
+  "社會民主黨": { "color": "#e91e63", "badgeColor": "#fce4ec", "textColor": "#ad1457", "abbr": "社民黨" }
+}

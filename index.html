@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="中華民國立法院歷屆立法委員暨問政紀錄檢索系統。收錄第1屆至第11屆委員名錄、法律提案、議程會議與質詢紀錄。">
+  <title>立法院歷屆問政檢索系統 ｜ Legislative Explorer</title>
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+  <header id="app-header">
+    <div class="header-container">
+      <a href="#/" class="brand" title="返回歷屆首頁">
+        <span class="brand-badge">LYDB</span>
+        <div class="brand-title">
+          <span class="brand-name">立法院歷屆問政檢索系統</span>
+          <span class="brand-subtitle">Legislative Yuan Proceedings & Members Archive (Terms 1–11)</span>
+        </div>
+      </a>
+      <nav class="header-nav" aria-label="系統主導覽">
+        <a href="#/" class="nav-link">屆別任期索引</a>
+        <a href="#/term/11" class="nav-link">第 11 屆現任</a>
+        <a href="#/about" class="nav-link">資料庫說明</a>
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="切換深淺模式">主題模式</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app-root">
+    <!-- SPA 視圖內容由 router 動態調度 -->
+  </main>
+
+  <footer id="app-footer">
+    <div class="footer-container">
+      <div class="footer-top">
+        <div>
+          <strong>立法院歷屆問政檢索系統 (Legislative Explorer)</strong>
+          <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 2px;">
+            本系統為學術研究與公民監督取向之純靜態國會資料庫工具，無自建伺服器與資料庫。
+          </div>
+        </div>
+        <div class="footer-links">
+          <a href="#/">屆別目錄</a>
+          <a href="#/term/11">現任國會</a>
+          <a href="#/about">架構與資料來源</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <div>
+          原始資料取自立法院開放資料平台（data.ly.gov.tw）、國會圖書館（lis.ly.gov.tw）與 OpenFun v2 API。
+        </div>
+        <div>
+          依政府資料開放授權條款及 CC-BY-4.0 授權使用
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
