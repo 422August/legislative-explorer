@@ -57,13 +57,25 @@ export async function renderTermList({ term }) {
   }
 
   // Action links
-  const subNav = createElement('div', { style: 'margin-bottom: var(--space-4); display: flex; gap: 8px;' }, [
+  const subNavLinks = [
     createElement('a', {
       href: `#/term/${t}/meetings`,
       className: 'btn btn-sm',
       text: '檢視本屆次會議紀錄與議事錄'
     })
-  ]);
+  ];
+
+  if (t >= 2) {
+    subNavLinks.push(
+      createElement('a', {
+        href: `#/bills?term=${t}`,
+        className: 'btn btn-sm',
+        text: '檢索本屆審查議案'
+      })
+    );
+  }
+
+  const subNav = createElement('div', { style: 'margin-bottom: var(--space-4); display: flex; gap: 8px; flex-wrap: wrap;' }, subNavLinks);
   container.appendChild(subNav);
 
   // Content Area

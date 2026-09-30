@@ -24,6 +24,26 @@ export function renderHome() {
   ]);
   container.appendChild(notice);
 
+  // Quick Entry / Function Shortcuts
+  const quickActions = createElement('div', { style: 'margin-bottom: var(--space-5); display: flex; gap: 8px; flex-wrap: wrap;' }, [
+    createElement('a', {
+      href: '#/bills',
+      className: 'btn btn-primary',
+      text: '法律議案全宗檢索'
+    }),
+    createElement('a', {
+      href: '#/term/11',
+      className: 'btn',
+      text: '第 11 屆現任委員名冊'
+    }),
+    createElement('a', {
+      href: '#/term/11/meetings',
+      className: 'btn',
+      text: '第 11 屆會議議事錄'
+    })
+  ]);
+  container.appendChild(quickActions);
+
   // Structured Terms Directory Table
   const tableContainer = createElement('div', { className: 'terms-table-container' });
   const table = createElement('table', { className: 'terms-table' });
@@ -35,7 +55,7 @@ export function renderHome() {
       createElement('th', { style: 'width: 130px;', text: '任期年代' }),
       createElement('th', { style: 'width: 110px;', text: '代表人數' }),
       createElement('th', { text: '國會體制與法制背景說明' }),
-      createElement('th', { style: 'width: 130px; text-align: right;', text: '名冊檢索' })
+      createElement('th', { style: 'width: 190px; text-align: right;', text: '檢索操作' })
     ])
   ]);
   table.appendChild(thead);
@@ -64,12 +84,31 @@ export function renderHome() {
     const descCell = createElement('td', { className: 'term-desc-cell', text: t.description });
 
     // Action Cell
-    const actionCell = createElement('td', { style: 'text-align: right;' }, [
+    const actionButtons = [
       createElement('a', {
         href: `#/term/${t.term}`,
         className: t.current ? 'btn btn-primary btn-sm' : 'btn btn-sm',
-        text: '檢索名冊'
+        text: '名冊'
       })
+    ];
+
+    if (t.term >= 2) {
+      actionButtons.push(
+        createElement('a', {
+          href: `#/bills?term=${t.term}`,
+          className: 'btn btn-sm',
+          text: '議案'
+        }),
+        createElement('a', {
+          href: `#/term/${t.term}/meetings`,
+          className: 'btn btn-sm',
+          text: '會議'
+        })
+      );
+    }
+
+    const actionCell = createElement('td', { style: 'text-align: right; white-space: nowrap;' }, [
+      createElement('div', { style: 'display: inline-flex; gap: 4px; justify-content: flex-end;' }, actionButtons)
     ]);
 
     tr.appendChild(termCell);

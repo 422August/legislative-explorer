@@ -149,6 +149,27 @@ class ApiClient {
     return data;
   }
 
+  async searchBills({ query = '', term = '', page = 1, limit = 20 }) {
+    const params = new URLSearchParams();
+    if (query && query.trim()) {
+      params.append('q', query.trim());
+    }
+    if (term) {
+      params.append('屆', term);
+    }
+    params.append('page', page);
+    params.append('limit', limit);
+
+    const cacheKey = `search-bills:${params.toString()}`;
+    const cached = await cache.get('bills', cacheKey);
+    if (cached) return cached;
+
+    const url = `${API_BASE_URL}/bills?${params.toString()}`;
+    const data = await this.fetchWithRetry(url);
+    await cache.set('bills', cacheKey, data, DEFAULT_TTL.BILLS);
+    return data;
+  }
+
   async getBillDetail(billNo) {
     const cacheKey = `bill:${billNo}`;
     const cached = await cache.get('bills', cacheKey);

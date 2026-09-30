@@ -3,6 +3,7 @@ import { renderHome } from './pages/home.js';
 import { renderTermList } from './pages/term-list.js';
 import { renderLegislatorDetail } from './pages/legislator-detail.js';
 import { renderBillDetail } from './pages/bill-detail.js';
+import { renderBillSearch } from './pages/bill-search.js';
 import { renderMeetingList } from './pages/meeting-list.js';
 import { renderAbout } from './pages/about.js';
 
@@ -14,6 +15,14 @@ const routes = [
   {
     pattern: /^#\/term\/(\d+)\/bill\/(.+)$/,
     handler: (matches) => renderBillDetail({ term: matches[1], billNo: matches[2] })
+  },
+  {
+    pattern: /^#\/bill\/(.+)$/,
+    handler: (matches) => renderBillDetail({ term: 11, billNo: matches[1] })
+  },
+  {
+    pattern: /^#\/bills(?:\?(.*))?$/,
+    handler: (matches) => renderBillSearch({ searchParams: matches[1] || '' })
   },
   {
     pattern: /^#\/term\/(\d+)\/meetings$/,
@@ -53,12 +62,32 @@ export class Router {
       }
     }
 
+    this.updateActiveNav(hash);
+
     if (!matched) {
       // Fallback to home
       window.location.hash = '#/';
     }
 
     window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  updateActiveNav(hash) {
+    const navLinks = document.querySelectorAll('.header-nav .nav-link');
+    navLinks.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href === '#/' && (hash === '#/' || hash === '')) {
+        link.classList.add('active');
+      } else if (href === '#/bills' && hash.startsWith('#/bills')) {
+        link.classList.add('active');
+      } else if (href === '#/term/11' && hash === '#/term/11') {
+        link.classList.add('active');
+      } else if (href === '#/about' && hash === '#/about') {
+        link.classList.add('active');
+      } else {
+        link.classList.remove('active');
+      }
+    });
   }
 
   async renderView(viewPromise) {
