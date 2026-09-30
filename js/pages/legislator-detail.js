@@ -178,8 +178,30 @@ function renderProfile(container, leg, term) {
     return;
   }
 
+  // Quick Action Buttons (Direct entry to Bill Search & Meeting Archives from this Legislator)
+  const profileActions = createElement('div', {
+    style: 'margin-top: var(--space-4); display: flex; gap: 8px; flex-wrap: wrap; align-items: center;'
+  }, [
+    createElement('a', {
+      href: `#/bills?term=${term}&q=${encodeURIComponent(leg.name)}`,
+      className: 'btn btn-primary btn-sm',
+      text: `搜尋 ${leg.name} 委員全宗議案紀錄`
+    }),
+    createElement('a', {
+      href: `#/bills?term=${term}`,
+      className: 'btn btn-sm',
+      text: `檢索第 ${term} 屆全部法律議案`
+    }),
+    createElement('a', {
+      href: `#/term/${term}/meetings`,
+      className: 'btn btn-sm',
+      text: `檢視第 ${term} 屆會議紀錄`
+    })
+  ]);
+  container.appendChild(profileActions);
+
   // Register Tabs Section
-  const tabsSection = createElement('div', { style: 'margin-top: var(--space-6);' });
+  const tabsSection = createElement('div', { style: 'margin-top: var(--space-5);' });
   const tabsContent = createElement('div', { id: 'tab-content-area', style: 'min-height: 240px;' });
 
   const tabDefs = [
@@ -247,6 +269,22 @@ function renderProfile(container, leg, term) {
       ]));
       return;
     }
+
+    // Tab Header with search shortcut
+    const tabHeader = createElement('div', {
+      style: 'display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3); flex-wrap: wrap; gap: 8px;'
+    }, [
+      createElement('span', {
+        style: 'font-size: 0.8125rem; color: var(--color-text-secondary);',
+        text: `共列出 ${data.total || bills.length} 筆${type === 'propose' ? '主提案' : '連署提案'}紀錄`
+      }),
+      createElement('a', {
+        href: `#/bills?term=${term}&q=${encodeURIComponent(leg.name)}`,
+        className: 'btn btn-sm',
+        text: `在全宗議案庫搜尋【${leg.name}】法案 →`
+      })
+    ]);
+    tabsContent.appendChild(tabHeader);
 
     const list = createElement('div', {});
     bills.forEach(b => list.appendChild(createBillItem(b, term)));

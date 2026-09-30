@@ -69,8 +69,8 @@ export async function renderTermList({ term }) {
     subNavLinks.push(
       createElement('a', {
         href: `#/bills?term=${t}`,
-        className: 'btn btn-sm',
-        text: '檢索本屆審查議案'
+        className: 'btn btn-primary btn-sm',
+        text: `檢索第 ${t} 屆法律議案全宗`
       })
     );
   }

@@ -24,22 +24,72 @@ export function renderHome() {
   ]);
   container.appendChild(notice);
 
+  // Direct Bill Search Box on Home Page
+  const homeSearchBox = createElement('div', {
+    style: 'background-color: var(--color-bg-card); border: 1px solid var(--color-border); padding: var(--space-4); margin-bottom: var(--space-5);'
+  });
+
+  const searchBoxTitle = createElement('div', {
+    style: 'font-weight: 700; font-size: 0.9375rem; margin-bottom: 6px; color: var(--color-text);',
+    text: '法律議案直接搜尋 (Direct Bill Search)'
+  });
+
+  const searchForm = createElement('div', {
+    style: 'display: flex; gap: 8px; flex-wrap: wrap; align-items: center;'
+  });
+
+  const searchInput = createElement('input', {
+    type: 'search',
+    className: 'query-input',
+    placeholder: '輸入法律草案名稱（如：詐欺、刑法、洗錢防制）、議案編號或提案委員姓名...',
+    style: 'flex: 1 1 320px; font-size: 0.875rem; padding: 6px 10px;',
+    onkeydown: (e) => {
+      if (e.key === 'Enter') {
+        const val = e.target.value.trim();
+        window.location.hash = val ? `#/bills?q=${encodeURIComponent(val)}` : '#/bills';
+      }
+    }
+  });
+
+  const searchBtn = createElement('button', {
+    className: 'btn btn-primary',
+    text: '直接搜尋議案',
+    onclick: () => {
+      const val = searchInput.value.trim();
+      window.location.hash = val ? `#/bills?q=${encodeURIComponent(val)}` : '#/bills';
+    }
+  });
+
+  const browseAllBillsBtn = createElement('a', {
+    href: '#/bills',
+    className: 'btn',
+    text: '進入全宗檢索庫'
+  });
+
+  searchForm.appendChild(searchInput);
+  searchForm.appendChild(searchBtn);
+  searchForm.appendChild(browseAllBillsBtn);
+
+  homeSearchBox.appendChild(searchBoxTitle);
+  homeSearchBox.appendChild(searchForm);
+  container.appendChild(homeSearchBox);
+
   // Quick Entry / Function Shortcuts
   const quickActions = createElement('div', { style: 'margin-bottom: var(--space-5); display: flex; gap: 8px; flex-wrap: wrap;' }, [
     createElement('a', {
-      href: '#/bills',
-      className: 'btn btn-primary',
-      text: '法律議案全宗檢索'
-    }),
-    createElement('a', {
       href: '#/term/11',
-      className: 'btn',
+      className: 'btn btn-primary',
       text: '第 11 屆現任委員名冊'
     }),
     createElement('a', {
       href: '#/term/11/meetings',
       className: 'btn',
       text: '第 11 屆會議議事錄'
+    }),
+    createElement('a', {
+      href: '#/bills?term=11',
+      className: 'btn',
+      text: '第 11 屆法律議案'
     })
   ]);
   container.appendChild(quickActions);

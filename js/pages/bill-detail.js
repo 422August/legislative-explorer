@@ -15,9 +15,31 @@ export async function renderBillDetail({ term, billNo }) {
     createElement('span', { className: 'breadcrumb-separator', text: '/' }),
     createElement('a', { href: `#/term/${t}`, text: `${meta.name}名冊` }),
     createElement('span', { className: 'breadcrumb-separator', text: '/' }),
+    createElement('a', { href: `#/bills?term=${t}`, text: `${meta.name}議案檢索` }),
+    createElement('span', { className: 'breadcrumb-separator', text: '/' }),
     createElement('span', { text: `議案編號：${billNo}` })
   ]);
   container.appendChild(breadcrumb);
+
+  // Sub Navigation Actions
+  const subNav = createElement('div', { style: 'margin-bottom: var(--space-4); display: flex; gap: 8px; flex-wrap: wrap;' }, [
+    createElement('a', {
+      href: `#/bills?term=${t}`,
+      className: 'btn btn-sm',
+      text: `返回 ${meta.name} 議案列表`
+    }),
+    createElement('a', {
+      href: '#/bills',
+      className: 'btn btn-sm',
+      text: '法律議案全宗檢索'
+    }),
+    createElement('a', {
+      href: `#/term/${t}`,
+      className: 'btn btn-sm',
+      text: `返回 ${meta.name} 委員名冊`
+    })
+  ]);
+  container.appendChild(subNav);
 
   // Loading skeleton
   const placeholder = createElement('div', { className: 'skeleton-card', style: 'height: 300px; margin-bottom: 20px;' });
