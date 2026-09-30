@@ -14,10 +14,12 @@ export async function renderBillSearch({ searchParams = '' }) {
   const params = new URLSearchParams(searchParams);
   const initialQuery = params.get('q') || '';
   const initialTerm = params.get('term') || params.get('屆') || '';
+  const initialScope = params.get('scope') || 'title_or_proposer';
 
   const state = {
     query: initialQuery,
     term: initialTerm,
+    scope: initialScope,
     page: 1,
     limit: 20
   };
@@ -59,9 +61,36 @@ export async function renderBillSearch({ searchParams = '' }) {
     }
   });
 
-  const queryGroup = createElement('div', { className: 'query-group', style: 'flex: 1 1 260px;' }, [
+  const queryGroup = createElement('div', { className: 'query-group', style: 'flex: 1 1 240px;' }, [
     createElement('span', { className: 'query-label', text: '檢索詞：' }),
     queryInput
+  ]);
+
+  // Scope Select Filter
+  const scopeOptions = [
+    createElement('option', { value: 'title_or_proposer', text: '法案名稱與提案人 (最精準)' }),
+    createElement('option', { value: 'title', text: '僅限法案名稱 (法條名稱)' }),
+    createElement('option', { value: 'proposer', text: '僅限主要提案人 (提案委員)' }),
+    createElement('option', { value: 'all', text: '全文檢索 (含案由說明與連署人)' })
+  ];
+
+  const scopeSelect = createElement('select', {
+    className: 'query-select',
+    'aria-label': '檢索範圍',
+    onchange: (e) => {
+      state.scope = e.target.value;
+      state.page = 1;
+      executeSearch();
+    }
+  }, scopeOptions);
+
+  Array.from(scopeSelect.options).forEach(opt => {
+    if (opt.value === state.scope) opt.selected = true;
+  });
+
+  const scopeGroup = createElement('div', { className: 'query-group' }, [
+    createElement('span', { className: 'query-label', text: '檢索範圍：' }),
+    scopeSelect
   ]);
 
   // Term Select Filter (Digital archives cover Term 5 to 11; Terms 1-4 are paper/microfilm)
@@ -111,6 +140,7 @@ export async function renderBillSearch({ searchParams = '' }) {
   });
 
   toolbar.appendChild(queryGroup);
+  toolbar.appendChild(scopeGroup);
   toolbar.appendChild(termGroup);
   toolbar.appendChild(submitBtn);
   toolbar.appendChild(countStat);
@@ -129,6 +159,7 @@ export async function renderBillSearch({ searchParams = '' }) {
     const newParams = new URLSearchParams();
     if (state.query) newParams.set('q', state.query);
     if (state.term) newParams.set('term', state.term);
+    if (state.scope && state.scope !== 'title_or_proposer') newParams.set('scope', state.scope);
     const hashSuffix = newParams.toString() ? `?${newParams.toString()}` : '';
     if (window.location.hash !== `#/bills${hashSuffix}`) {
       history.replaceState(null, '', `#/bills${hashSuffix}`);
@@ -138,6 +169,7 @@ export async function renderBillSearch({ searchParams = '' }) {
       const data = await api.searchBills({
         query: state.query,
         term: state.term,
+        scope: state.scope,
         page: state.page,
         limit: state.limit
       });

@@ -149,26 +149,34 @@ class ApiClient {
     return data;
   }
 
-  formatSearchQuery(rawQuery) {
+  formatSearchQuery(rawQuery, scope = 'title_or_proposer') {
     if (!rawQuery) return '';
     const trimmed = rawQuery.trim();
     if (!trimmed) return '';
 
-    // If user already typed quotes, preserve their query syntax
-    if (trimmed.includes('"')) {
+    // If user already typed quotes or explicit field search (e.g. 議案名稱:...), preserve it
+    if (trimmed.includes('"') || trimmed.includes(':')) {
       return trimmed;
     }
 
-    // Split words by whitespace
     const words = trimmed.split(/\s+/).filter(Boolean);
-    if (words.length === 1) {
-      return `"${words[0]}"`;
+    if (words.length === 0) return '';
+
+    if (scope === 'title') {
+      return words.map(w => `議案名稱:"${w}"`).join(' AND ');
+    } else if (scope === 'proposer') {
+      return words.map(w => `提案人:"${w}"`).join(' AND ');
+    } else if (scope === 'cosigner') {
+      return words.map(w => `連署人:"${w}"`).join(' AND ');
+    } else if (scope === 'all') {
+      return words.map(w => `"${w}"`).join(' AND ');
+    } else {
+      // Default: 'title_or_proposer' (High precision for both laws and legislators)
+      return words.map(w => `(議案名稱:"${w}" OR 提案人:"${w}")`).join(' AND ');
     }
-    // Multiple terms: wrap each in quotes with AND operator for high precision
-    return words.map(w => `"${w}"`).join(' AND ');
   }
 
-  async searchBills({ query = '', term = '', page = 1, limit = 20 }) {
+  async searchBills({ query = '', term = '', scope = 'title_or_proposer', page = 1, limit = 20 }) {
     const rawTrimmed = (query || '').trim();
     const params = new URLSearchParams();
 
@@ -176,7 +184,7 @@ class ApiClient {
     if (/^\d{10,16}$/.test(rawTrimmed)) {
       params.append('議案編號', rawTrimmed);
     } else if (rawTrimmed) {
-      params.append('q', this.formatSearchQuery(rawTrimmed));
+      params.append('q', this.formatSearchQuery(rawTrimmed, scope));
     }
 
     if (term) {
