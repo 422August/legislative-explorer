@@ -1,52 +1,61 @@
-# 立法院歷屆問政檢索系統 ｜ Legislative Explorer
+# Legislative Explorer
 
-中華民國立法院歷屆立法委員暨問政紀錄檢索系統。支援行憲以來的**第 1 屆至第 11 屆全部立法委員資料**，提供委員名錄檢索、個人基本檔案卡、法律案提案紀錄、議事會議出缺席與質詢答復紀錄。
+A historical Legislative Yuan member and parliamentary record search system.
 
----
+Supports legislators from the 1st through 11th Legislative Yuan, including member directories, profiles, legislative proposals, attendance records, and parliamentary proceedings.
 
-## 視覺與介面設計原則
+## Features
 
-本系統採用「**國會資料庫／學術研究資料庫／現代化政府網站**」之視覺風格，去除常見 AI 生成 SaaS 與儀表板之裝飾語言：
+* Search legislators by term and name
+* View official member profiles and service history
+* Browse legislative proposals and co-signatories
+* Browse parliamentary meetings, attendance, and questioning records
+* Support for the 1st–11th Legislative Yuan
 
-- **嚴謹典雅的配色**：以深色國會海軍藍（`#0b2e59`）、深灰文字（`#1a202c`）與紙本檔案灰（`#f4f6f8`）為主調，搭配清晰的 1px 邊框與水平分隔線。
-- **高資訊密度與結構化表格**：捨棄過度留白與懸浮卡片，首頁以「歷屆任期索引目錄表」呈現 11 屆憲政年代與制度演變；提案與會議紀錄以研究型目錄清單排版。
-- **立委個人公務檔案表**：委員個人頁採用「立法委員檔案登記表」格式，左側官方肖像框、右側雙欄結構化基本屬性表（中文名、外文名、屆次、性別、黨籍、選區、任期起訖與離職紀錄），下接學歷、經歷要目與歷任常設委員會。
-- **去裝飾化**：全站無 Emoji 表情符號、無紫色漸層、無模糊毛玻璃（Glassmorphism）、無圓角氣泡標籤（Pill Badges），維持嚴謹的學術檔案檢索工具質感。
-- **桌面優先與響應適配**：以桌面端多欄並列審閱為優先，並向下相容平板（768px）與行動裝置（480px）。
+## Architecture
 
----
+* Pure static website
+* HTML5, CSS3, and modern JavaScript
+* No backend
+* No database
+* No npm runtime dependency
+* Hash-based routing
+* IndexedDB for client-side caching
 
-## 架構與資料來源
+### Data Sources
 
-- **純靜態無後端（Zero Backend）**：100% 採用標準 HTML5、CSS3、ES2020+ JavaScript，無 npm runtime 依賴、無自建伺服器、無資料庫。
-- **雙軌資料流程**：
-  - **第 2～11 屆**：瀏覽器直連由公民科技社群維護之 [OpenFun v2 API](https://v2.ly.govapi.tw/)（具備原生 CORS 支援），即時取得立法委員詳細背景、法律提案、會議出缺席與質詢紀錄。
-  - **第 1 屆（萬年國會 1,183 席）**：整合立法院國會圖書館歷史問政檔案，預建置離線結構化靜態 JSON (`static/data/term-01-legislators.json`)。
-- **Hash 路由與離線快取**：
-  - Hash 路由（`#/`、`#/term/11`、`#/term/11/legislator/柯建銘`）完全相容 GitHub Pages 與 Vercel 靜態部署。
-  - 瀏覽器內建 IndexedDB 快取名冊（24 小時）與提案紀錄（2 小時），提升連續查詢效能。
+**Terms 2–11**
 
----
+Data is retrieved from the [OpenFun Legislative Yuan API](https://v2.ly.govapi.tw/), which provides CORS-enabled access to Legislative Yuan data.
 
-## 本地預覽測試
+**Term 1**
 
-只需啟動任意本機靜態伺服器即可預覽：
+Historical data from the Legislative Yuan National Library is stored as static JSON under:
+
+```text
+static/data/term-01-legislators.json
+```
+
+## Development
+
+Start a local static server:
 
 ```bash
-cd Legislative
 python3 -m http.server 8000
 ```
-開啟瀏覽器前往：`http://localhost:8000`
 
----
+Then open:
 
-## 部署說明
+```text
+http://localhost:8000
+```
 
-### 部署至 GitHub Pages
-1. 將專案推送至 GitHub Repository。
-2. 於 **Settings** > **Pages** 設定來源為 `main` 分支的 `/ (root)`。
-3. 站點內建 `404.html` 與 Hash Router，直連任意路徑皆能正常轉址。
+## Deployment
 
-### 部署至 Vercel
-1. 專案根目錄已內建 `vercel.json` 靜態快取與重寫設定。
-2. 於 Vercel Import 本專案，Framework Preset 選擇 **Other** 即可直接發布。
+The project can be deployed directly to GitHub Pages or Vercel as a static site.
+
+## License
+
+Licensed under the GNU General Public License v3.0 (GPL-3.0).
+
+See `LICENSE` for the full license text.
