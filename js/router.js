@@ -7,8 +7,22 @@ import { renderBillSearch } from './pages/bill-search.js';
 import { renderMeetingList } from './pages/meeting-list.js';
 import { renderAbout } from './pages/about.js';
 import { renderGraphExplorer } from './pages/graph-explorer.js';
+import { renderCommitteeList } from './pages/committee-list.js';
+import { renderCommitteeDetail } from './pages/committee-detail.js';
 
 const routes = [
+  {
+    pattern: /^#\/term\/(\d+)\/committee\/(.+)$/,
+    handler: (matches) => renderCommitteeDetail({ term: matches[1], committeeKey: matches[2] })
+  },
+  {
+    pattern: /^#\/term\/(\d+)\/committees$/,
+    handler: (matches) => renderCommitteeList({ term: matches[1] })
+  },
+  {
+    pattern: /^#\/committees$/,
+    handler: () => renderCommitteeList({ term: 11 })
+  },
   {
     pattern: /^#\/term\/(\d+)\/graph(?:\?(.*))?$/,
     handler: (matches) => {
@@ -110,6 +124,8 @@ export class Router {
       } else if (href === '#/bills' && hash.startsWith('#/bills')) {
         link.classList.add('active');
       } else if (href === '#/term/11' && (hash === '#/term/11' || hash === '#/term/11/')) {
+        link.classList.add('active');
+      } else if (href && href.includes('/committees') && hash.includes('/committees')) {
         link.classList.add('active');
       } else if (href && href.includes('/graph') && hash.includes('/graph')) {
         link.classList.add('active');

@@ -131,6 +131,10 @@ export class GraphInteraction {
       const billNo = entity.metadata?.billNo || entity.id.split('::')[1];
       const term = entity.metadata?.term || 11;
       await this.data.loadBillFocus(billNo, term);
+    } else if (entity.type === ENTITY_TYPES.COMMITTEE) {
+      const commName = entity.label;
+      const term = entity.metadata?.term || this.state.getState().term || 11;
+      await this.data.loadCommitteeFocus(term, commName);
     } else {
       // 其他類型設為焦點
       this.state.setFocus(entityId);

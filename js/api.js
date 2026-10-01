@@ -254,6 +254,48 @@ class ApiClient {
     await cache.set('votes', cacheKey, data, DEFAULT_TTL.VOTES);
     return data;
   }
+
+  async getCommittees() {
+    const cacheKey = 'committees:all';
+    const cached = await cache.get('committees', cacheKey);
+    if (cached) return cached;
+
+    try {
+      const url = `${API_BASE_URL}/committees?limit=50`;
+      const data = await this.fetchWithRetry(url);
+      const list = data.committees || [];
+      await cache.set('committees', cacheKey, list, DEFAULT_TTL.COMMITTEES);
+      return list;
+    } catch (err) {
+      console.warn('[API] Failed to fetch committees, fallback to constants:', err);
+      return [];
+    }
+  }
+
+  async getCommitteeBills(term, committeeName, page = 1, limit = 20) {
+    const t = parseInt(term, 10);
+    const cacheKey = `comm-bills:${t}:${committeeName}:p${page}:l${limit}`;
+    const cached = await cache.get('bills', cacheKey);
+    if (cached) return cached;
+
+    // 精確檢索在議案流程中交付該委員會審查的法律案
+    const query = `議案流程.狀態:"${committeeName}"`;
+    const data = await this.searchBills({ query, term: t, page, limit });
+    await cache.set('bills', cacheKey, data, DEFAULT_TTL.BILLS);
+    return data;
+  }
+
+  async getCommitteeMeets(term, committeeId, page = 1, limit = 20) {
+    const t = parseInt(term, 10);
+    const cacheKey = `comm-meets:${t}:${committeeId}:p${page}:l${limit}`;
+    const cached = await cache.get('meets', cacheKey);
+    if (cached) return cached;
+
+    const url = `${API_BASE_URL}/meets?%E5%B1%86=${t}&%E5%A7%94%E5%93%A1%E6%9C%83%E4%BB%A3%E8%99%9F=${committeeId}&page=${page}&limit=${limit}`;
+    const data = await this.fetchWithRetry(url);
+    await cache.set('meets', cacheKey, data, DEFAULT_TTL.MEETS);
+    return data;
+  }
 }
 
 export const api = new ApiClient();

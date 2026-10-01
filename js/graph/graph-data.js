@@ -1,6 +1,6 @@
 // js/graph/graph-data.js
 import { api } from '../api.js';
-import { normalizeLegislator, getPartyInfo, formatDate } from '../utils.js';
+import { normalizeLegislator, getPartyInfo, formatDate, extractCommitteeMembers } from '../utils.js';
 import { ENTITY_TYPES, RELATION_TYPES, RELATION_LABELS } from './graph-state.js';
 
 export class GraphData {
@@ -535,4 +535,194 @@ export class GraphData {
 
     return { total: cosigners.length, count: displayCosigners.length };
   }
+
+  // === 委員會焦點載入與展開 ===
+
+  // 1. 以委員會為焦點載入
+  async loadCommitteeFocus(term, committeeName) {
+    const termNum = parseInt(term, 10) || 11;
+    const cleanName = String(committeeName || '').trim();
+    const commId = this.createEntityId(ENTITY_TYPES.COMMITTEE, termNum, cleanName);
+
+    const commEntity = {
+      id: commId,
+      type: ENTITY_TYPES.COMMITTEE,
+      label: cleanName,
+      sublabel: `第 ${termNum} 屆常設／特種委員會`,
+      metadata: { term: termNum, name: cleanName },
+      expanded: false,
+      visible: true
+    };
+
+    this.state.addEntities([commEntity]);
+    this.state.setFocus(commId);
+    this.state.pushExplorationPath({
+      entityId: commId,
+      label: cleanName,
+      type: ENTITY_TYPES.COMMITTEE
+    });
+
+    // 自動展開部分成員
+    await this.expandCommitteeMembers(termNum, cleanName, 20);
+
+    return commEntity;
+  }
+
+  // 2. 展開委員會成員
+  async expandCommitteeMembers(term, committeeName, limit = 25) {
+    const termNum = parseInt(term, 10) || 11;
+    const cleanName = String(committeeName || '').trim();
+    const commId = this.createEntityId(ENTITY_TYPES.COMMITTEE, termNum, cleanName);
+
+    this.state.setLoading(`expand::comm-members::${commId}`, true);
+
+    try {
+      const legislators = await api.getTermLegislators(termNum);
+      const members = extractCommitteeMembers(legislators, cleanName);
+
+      const entities = [];
+      const relationships = [];
+
+      const displayList = members.slice(0, limit);
+      for (const m of displayList) {
+        const leg = m.legislator;
+        const legId = this.createEntityId(ENTITY_TYPES.LEGISLATOR, termNum, leg.name);
+
+        entities.push({
+          id: legId,
+          type: ENTITY_TYPES.LEGISLATOR,
+          label: leg.name,
+          sublabel: `${leg.party || '無黨籍'} ｜ ${m.isConvenor ? '召委' : '委員'}`,
+          metadata: { ...leg, isConvenor: m.isConvenor, sessions: m.sessions },
+          expanded: false,
+          visible: true
+        });
+
+        relationships.push({
+          id: `served_on::${legId}::${commId}`,
+          type: RELATION_TYPES.SERVED_ON,
+          sourceId: legId,
+          targetId: commId,
+          label: m.isConvenor ? '召集委員' : RELATION_LABELS.served_on
+        });
+      }
+
+      // 聚合節點
+      if (members.length > limit) {
+        const remaining = members.length - limit;
+        const aggId = `aggregate::comm-members::${commId}`;
+        entities.push({
+          id: aggId,
+          type: ENTITY_TYPES.LEGISLATOR,
+          isAggregate: true,
+          label: `+${remaining} 名成員`,
+          sublabel: `共 ${members.length} 名委員`,
+          metadata: { parentId: commId, term: termNum, committeeName: cleanName },
+          expanded: false,
+          visible: true
+        });
+
+        relationships.push({
+          id: `served_on::${aggId}::${commId}`,
+          type: RELATION_TYPES.SERVED_ON,
+          sourceId: aggId,
+          targetId: commId,
+          label: '更多成員'
+        });
+      }
+
+      this.state.addEntities(entities);
+      this.state.addRelationships(relationships);
+      this.state.toggleExpand(commId, true);
+
+      return { total: members.length, count: displayList.length };
+    } finally {
+      this.state.setLoading(`expand::comm-members::${commId}`, false);
+    }
+  }
+
+  // 3. 展開交付該委員會審查之法案
+  async expandCommitteeBills(term, committeeName, page = 1, limit = 15) {
+    const termNum = parseInt(term, 10) || 11;
+    const cleanName = String(committeeName || '').trim();
+    const commId = this.createEntityId(ENTITY_TYPES.COMMITTEE, termNum, cleanName);
+
+    this.state.setLoading(`expand::comm-bills::${commId}`, true);
+
+    try {
+      const res = await api.getCommitteeBills(termNum, cleanName, page, limit);
+      const bills = res.bills || [];
+      const total = res.total || 0;
+
+      const entities = [];
+      const relationships = [];
+
+      for (const b of bills) {
+        const bNo = b['議案編號'];
+        if (!bNo) continue;
+        const billId = this.createEntityId(ENTITY_TYPES.BILL, bNo);
+        const title = b['議案名稱'] || '法律案';
+
+        entities.push({
+          id: billId,
+          type: ENTITY_TYPES.BILL,
+          label: this.truncateLabel(title, 26),
+          sublabel: `${b['議案狀態'] || '審查中'} ｜ ${formatDate(b['最新進度日期'] || b['提案日期'])}`,
+          metadata: {
+            billNo: bNo,
+            fullTitle: title,
+            status: b['議案狀態'] || '',
+            date: b['最新進度日期'] || b['提案日期'] || '',
+            term: termNum,
+            proposers: b['提案人'] || [],
+            cosigners: b['連署人'] || []
+          },
+          expanded: false,
+          visible: true
+        });
+
+        relationships.push({
+          id: `discussed_in::${billId}::${commId}`,
+          type: RELATION_TYPES.DISCUSSED_IN,
+          sourceId: billId,
+          targetId: commId,
+          label: '交付審查'
+        });
+      }
+
+      // 聚合節點
+      const loadedCount = page * limit;
+      if (total > loadedCount) {
+        const remaining = total - loadedCount;
+        const aggId = `aggregate::comm-bills::${commId}::p${page + 1}`;
+        entities.push({
+          id: aggId,
+          type: ENTITY_TYPES.BILL,
+          isAggregate: true,
+          label: `+${remaining} 筆審查法案`,
+          sublabel: `點擊載入下一頁 (共 ${total} 筆)`,
+          metadata: { parentId: commId, relationType: 'comm-bills', term: termNum, committeeName: cleanName, nextPage: page + 1 },
+          expanded: false,
+          visible: true
+        });
+
+        relationships.push({
+          id: `discussed_in::${aggId}::${commId}`,
+          type: RELATION_TYPES.DISCUSSED_IN,
+          sourceId: aggId,
+          targetId: commId,
+          label: '更多審查法案'
+        });
+      }
+
+      this.state.addEntities(entities);
+      this.state.addRelationships(relationships);
+      this.state.toggleExpand(commId, true);
+
+      return { total, count: bills.length };
+    } finally {
+      this.state.setLoading(`expand::comm-bills::${commId}`, false);
+    }
+  }
 }
+

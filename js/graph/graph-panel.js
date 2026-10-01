@@ -242,15 +242,69 @@ export class GraphPanel {
 
   renderCommitteePanel(entity) {
     const meta = entity.metadata || {};
-    const panel = createElement('div', { class: 'graph-panel-content' }, [
-      createElement('div', { class: 'graph-panel-header' }, '委員會 ｜ COMMITTEE'),
-      createElement('div', { class: 'graph-panel-body' }, [
-        createElement('div', { style: 'font-size: 14px; font-weight: 700; margin-bottom: 6px;' }, entity.label),
-        createElement('div', { style: 'font-size: 12px; color: var(--color-text-secondary); line-height: 1.6;' },
-          meta.fullName || `第 ${meta.term || 11} 屆委員會參與紀錄`
-        )
+    const term = meta.term || this.state.getState().term || 11;
+    const commName = entity.label;
+    const isFocus = entity.id === this.state.state.focusEntityId;
+
+    const panel = createElement('div', { class: 'graph-panel-content' });
+
+    // Header
+    panel.appendChild(
+      createElement('div', { class: 'graph-panel-header' }, [
+        createElement('span', {}, '委員會檔案 ｜ COMMITTEE RECORD'),
+        createElement('span', { class: 'tag tag-primary' }, `第 ${term} 屆`)
       ])
+    );
+
+    const body = createElement('div', { class: 'graph-panel-body' });
+
+    // Title
+    body.appendChild(
+      createElement('div', { style: 'font-size: 15px; font-weight: 700; color: var(--color-text); margin-bottom: 6px;' }, commName)
+    );
+
+    body.appendChild(
+      createElement('div', { style: 'font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; margin-bottom: 12px;' },
+        meta.fullName || `中華民國立法院第 ${term} 屆常設／特種委員會`
+      )
+    );
+
+    // 展開按鈕區塊
+    const expandSection = createElement('div', { style: 'margin-top: 10px;' }, [
+      createElement('div', { class: 'graph-section-title' }, '委員會網絡展開'),
+
+      // 1. 展開成員
+      this.createExpandButton({
+        label: '展開本會委員名單',
+        onExpand: () => this.data.expandCommitteeMembers(term, commName)
+      }),
+
+      // 2. 展開交付審查法案
+      this.createExpandButton({
+        label: '展開交付審查法案',
+        onExpand: () => this.data.expandCommitteeBills(term, commName)
+      })
     ]);
+    body.appendChild(expandSection);
+
+    // Actions
+    const actions = createElement('div', { class: 'graph-panel-actions' }, [
+      !isFocus ? createElement('button', {
+        class: 'btn btn-sm btn-primary',
+        style: 'width: 100%; margin-bottom: 6px;',
+        onclick: () => {
+          this.data.loadCommitteeFocus(term, commName);
+        }
+      }, '以此委員會為焦點重新佈局') : null,
+      createElement('a', {
+        href: `#/term/${term}/committee/${encodeURIComponent(commName)}`,
+        class: 'btn btn-sm',
+        style: 'width: 100%; text-align: center;'
+      }, '前往委員會完整公報檔案 →')
+    ].filter(Boolean));
+    body.appendChild(actions);
+
+    panel.appendChild(body);
     return panel;
   }
 

@@ -39,4 +39,36 @@ export const DEFAULT_TTL = {
   BILLS: 2 * 60 * 60 * 1000,              // 2 hours
   MEETS: 2 * 60 * 60 * 1000,              // 2 hours
   VOTES: 2 * 60 * 60 * 1000,              // 2 hours
+  COMMITTEES: 7 * 24 * 60 * 60 * 1000,    // 7 days
 };
+
+// 現行 8 大常設委員會 (國會改革第 7 屆迄今)
+export const COMMITTEES_CURRENT = [
+  { id: 15, name: '內政委員會', category: 'standing', abbr: '內政', desc: '審查內政部、中央選舉委員會、大陸委員會、原住民族委員會、客家委員會等主管法案與預算。' },
+  { id: 35, name: '外交及國防委員會', category: 'standing', abbr: '外國', desc: '審查外交部、國防部、僑務委員會、退輔會、國家安全局等主管法案與預算。' },
+  { id: 19, name: '經濟委員會', category: 'standing', abbr: '經濟', desc: '審查經濟部、農業部、國家發展委員會、公平交易委員會等主管法案與預算。' },
+  { id: 20, name: '財政委員會', category: 'standing', abbr: '財政', desc: '審查財政部、中央銀行、金融監督管理委員會、審計部、行政院主計總處等主管法案與預算。' },
+  { id: 22, name: '教育及文化委員會', category: 'standing', abbr: '教文', desc: '審查教育部、文化部、國家科學及技術委員會、中央研究院、國立故宮博物院等主管法案與預算。' },
+  { id: 23, name: '交通委員會', category: 'standing', abbr: '交通', desc: '審查交通部、數位發展部、國家通訊傳播委員會等主管法案與預算。' },
+  { id: 36, name: '司法及法制委員會', category: 'standing', abbr: '司法', desc: '審查司法院、法務部、考選部、銓敘部、公務人員保障暨培訓委員會、立法院組織規程等主管法案。' },
+  { id: 26, name: '社會福利及衛生環境委員會', category: 'standing', abbr: '社福', desc: '審查衛生福利部、勞動部、環境部等主管法案與預算。' }
+];
+
+// 現行 4 大特種委員會
+export const COMMITTEES_SPECIAL = [
+  { id: 27, name: '程序委員會', category: 'special', abbr: '程序', desc: '核定院會議事日程、排列法案審議順序及議程分配。' },
+  { id: 28, name: '紀律委員會', category: 'special', abbr: '紀律', desc: '審議院會移送之立法委員懲戒案件與議會自律事項。' },
+  { id: 29, name: '修憲委員會', category: 'special', abbr: '修憲', desc: '研擬與審查憲法修正案、領土變更案等憲政改革事宜。' },
+  { id: 30, name: '經費稽核委員會', category: 'special', abbr: '經稽', desc: '每月份按期稽核本院經費收支、各項採購與單據憑證。' }
+];
+
+// 歷史舊制委員會 (第 1–6 屆)
+export const COMMITTEES_HISTORICAL = [
+  { id: 16, name: '外交及僑務委員會', category: 'historical', abbr: '外僑', desc: '國會改革前外交及僑務政策審查委員會。' },
+  { id: 17, name: '科技及資訊委員會', category: 'historical', abbr: '科資', desc: '國會改革前科技、資訊及公共工程審查委員會。' },
+  { id: 18, name: '國防委員會', category: 'historical', abbr: '國防', desc: '國會改革前國防部及退輔會專責審查委員會。' },
+  { id: 21, name: '預算及決算委員會', category: 'historical', abbr: '預決', desc: '國會改革前中央政府總預算案與決算報告專責委員會。' },
+  { id: 24, name: '司法委員會', category: 'historical', abbr: '司法', desc: '國會改革前司法院與法務部專責審查委員會。' },
+  { id: 25, name: '法制委員會', category: 'historical', abbr: '法制', desc: '國會改革前考試院法制與行政院各部會組織法審查委員會。' }
+];
+

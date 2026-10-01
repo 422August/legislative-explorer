@@ -229,3 +229,62 @@ export function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
+
+/**
+ * 從整屆立法委員名單中，反向萃取特定委員會的成員與會期任期資訊
+ * @param {Array} legislators 該屆全體委員名單
+ * @param {string} committeeName 目標委員會名稱 (例如 "教育及文化委員會")
+ * @param {number|null} sessionFilter 可選的會期篩選 (例如 1, 2)
+ */
+export function extractCommitteeMembers(legislators = [], committeeName = '', sessionFilter = null) {
+  if (!committeeName) return [];
+  const cleanTarget = committeeName.trim();
+  const members = [];
+
+  for (const leg of legislators) {
+    if (!Array.isArray(leg.committee) || leg.committee.length === 0) continue;
+
+    const matchedSessions = [];
+    let isConvenor = false;
+
+    for (const commStr of leg.committee) {
+      if (!commStr || typeof commStr !== 'string') continue;
+
+      // 檢查是否命中目標委員會
+      if (commStr.includes(cleanTarget)) {
+        // 解析會期數字：例如 "第11屆第2會期" 或 "第01屆第85會期"
+        const sMatch = commStr.match(/第0?(\d+)會期/);
+        const sessionNum = sMatch ? parseInt(sMatch[1], 10) : null;
+
+        if (sessionNum !== null) {
+          if (sessionFilter === null || sessionFilter === sessionNum) {
+            matchedSessions.push(sessionNum);
+          }
+        } else {
+          // 若無明確會期字樣，默認納入
+          matchedSessions.push(1);
+        }
+
+        if (commStr.includes('召集委員') || commStr.includes('召委') || commStr.includes('召集人')) {
+          isConvenor = true;
+        }
+      }
+    }
+
+    if (matchedSessions.length > 0) {
+      const uniqueSessions = Array.from(new Set(matchedSessions)).sort((a, b) => a - b);
+      members.push({
+        legislator: leg,
+        sessions: uniqueSessions,
+        isConvenor
+      });
+    }
+  }
+
+  // 排序：召集委員優先置頂，其次按委員姓名排序
+  return members.sort((a, b) => {
+    if (a.isConvenor !== b.isConvenor) return a.isConvenor ? -1 : 1;
+    return a.legislator.name.localeCompare(b.legislator.name, 'zh-Hant');
+  });
+}
+

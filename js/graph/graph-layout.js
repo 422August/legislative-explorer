@@ -72,6 +72,30 @@ export class GraphLayout {
           label: '審查會議'
         }
       ];
+    } else if (type === ENTITY_TYPES.COMMITTEE) {
+      return [
+        {
+          key: 'members',
+          match: (e) => e.type === ENTITY_TYPES.LEGISLATOR,
+          startAngle: -75,
+          endAngle: 75,
+          label: '委員會成員'
+        },
+        {
+          key: 'bills',
+          match: (e) => e.type === ENTITY_TYPES.BILL,
+          startAngle: 90,
+          endAngle: 230,
+          label: '審查法律案'
+        },
+        {
+          key: 'meeting',
+          match: (e) => e.type === ENTITY_TYPES.MEETING,
+          startAngle: 240,
+          endAngle: 280,
+          label: '審查會議'
+        }
+      ];
     }
 
     // 預設平均分配 360 度
