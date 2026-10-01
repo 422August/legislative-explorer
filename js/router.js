@@ -6,8 +6,37 @@ import { renderBillDetail } from './pages/bill-detail.js';
 import { renderBillSearch } from './pages/bill-search.js';
 import { renderMeetingList } from './pages/meeting-list.js';
 import { renderAbout } from './pages/about.js';
+import { renderGraphExplorer } from './pages/graph-explorer.js';
 
 const routes = [
+  {
+    pattern: /^#\/term\/(\d+)\/graph(?:\?(.*))?$/,
+    handler: (matches) => {
+      const params = new URLSearchParams(matches[2] || '');
+      const focus = params.get('focus');
+      let focusType = null, focusId = null;
+      if (focus) {
+        const [t, ...rest] = focus.split(':');
+        focusType = t;
+        focusId = rest.join(':');
+      }
+      return renderGraphExplorer({ term: matches[1], focusType, focusId });
+    }
+  },
+  {
+    pattern: /^#\/graph(?:\?(.*))?$/,
+    handler: (matches) => {
+      const params = new URLSearchParams(matches[1] || '');
+      const focus = params.get('focus');
+      let focusType = null, focusId = null;
+      if (focus) {
+        const [t, ...rest] = focus.split(':');
+        focusType = t;
+        focusId = rest.join(':');
+      }
+      return renderGraphExplorer({ term: 11, focusType, focusId });
+    }
+  },
   {
     pattern: /^#\/term\/(\d+)\/legislator\/(.+)$/,
     handler: (matches) => renderLegislatorDetail({ term: matches[1], name: matches[2] })
@@ -80,7 +109,9 @@ export class Router {
         link.classList.add('active');
       } else if (href === '#/bills' && hash.startsWith('#/bills')) {
         link.classList.add('active');
-      } else if (href === '#/term/11' && hash === '#/term/11') {
+      } else if (href === '#/term/11' && (hash === '#/term/11' || hash === '#/term/11/')) {
+        link.classList.add('active');
+      } else if (href && href.includes('/graph') && hash.includes('/graph')) {
         link.classList.add('active');
       } else if (href === '#/about' && hash === '#/about') {
         link.classList.add('active');
@@ -91,6 +122,15 @@ export class Router {
   }
 
   async renderView(viewPromise) {
+    if (this.currentCleanUp && typeof this.currentCleanUp === 'function') {
+      try {
+        this.currentCleanUp();
+      } catch (err) {
+        console.error('[Router] Cleanup error:', err);
+      }
+      this.currentCleanUp = null;
+    }
+
     this.root.innerHTML = '';
     const spinner = document.createElement('div');
     spinner.className = 'empty-state';
@@ -101,6 +141,9 @@ export class Router {
       const view = await viewPromise;
       this.root.innerHTML = '';
       if (view instanceof Node) {
+        if (typeof view.__cleanup === 'function') {
+          this.currentCleanUp = view.__cleanup;
+        }
         this.root.appendChild(view);
       }
     } catch (err) {

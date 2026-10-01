@@ -79,9 +79,17 @@ async function renderBillContent(container, bill, term, billNo) {
   const sheet = createElement('div', { className: 'dossier-sheet' });
 
   // Header Bar
-  const headerBar = createElement('div', { className: 'dossier-header-bar' }, [
-    createElement('span', { text: `立法院議案審議資料表 ｜ 議案字號：${billNo}` }),
-    createElement('span', { style: 'font-family: var(--font-family-mono);', text: `審查狀態：${billStatus}` })
+  const headerBar = createElement('div', { className: 'dossier-header-bar', style: 'display: flex; justify-content: space-between; align-items: center;' }, [
+    createElement('div', {}, [
+      createElement('span', { text: `立法院議案審議資料表 ｜ 議案字號：${billNo}` }),
+      createElement('span', { style: 'font-family: var(--font-family-mono); margin-left: 12px;', text: `審查狀態：${billStatus}` })
+    ]),
+    createElement('a', {
+      href: `#/term/${term}/graph?focus=bill:${billNo}`,
+      className: 'btn btn-sm',
+      style: 'margin-left: auto; text-decoration: none;',
+      text: '進入關聯圖譜 ↗'
+    })
   ]);
   sheet.appendChild(headerBar);
 
