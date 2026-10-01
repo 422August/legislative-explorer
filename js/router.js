@@ -1,4 +1,3 @@
-// js/router.js
 import { renderHome } from './pages/home.js';
 import { renderTermList } from './pages/term-list.js';
 import { renderLegislatorDetail } from './pages/legislator-detail.js';
@@ -6,9 +5,9 @@ import { renderBillDetail } from './pages/bill-detail.js';
 import { renderBillSearch } from './pages/bill-search.js';
 import { renderMeetingList } from './pages/meeting-list.js';
 import { renderAbout } from './pages/about.js';
-import { renderGraphExplorer } from './pages/graph-explorer.js';
 import { renderCommitteeList } from './pages/committee-list.js';
 import { renderCommitteeDetail } from './pages/committee-detail.js';
+import { getCurrentTerm } from './constants.js';
 
 const routes = [
   {
@@ -21,35 +20,11 @@ const routes = [
   },
   {
     pattern: /^#\/committees$/,
-    handler: () => renderCommitteeList({ term: 11 })
+    handler: () => renderCommitteeList({ term: getCurrentTerm() })
   },
   {
-    pattern: /^#\/term\/(\d+)\/graph(?:\?(.*))?$/,
-    handler: (matches) => {
-      const params = new URLSearchParams(matches[2] || '');
-      const focus = params.get('focus');
-      let focusType = null, focusId = null;
-      if (focus) {
-        const [t, ...rest] = focus.split(':');
-        focusType = t;
-        focusId = rest.join(':');
-      }
-      return renderGraphExplorer({ term: matches[1], focusType, focusId });
-    }
-  },
-  {
-    pattern: /^#\/graph(?:\?(.*))?$/,
-    handler: (matches) => {
-      const params = new URLSearchParams(matches[1] || '');
-      const focus = params.get('focus');
-      let focusType = null, focusId = null;
-      if (focus) {
-        const [t, ...rest] = focus.split(':');
-        focusType = t;
-        focusId = rest.join(':');
-      }
-      return renderGraphExplorer({ term: 11, focusType, focusId });
-    }
+    pattern: /^#\/current$/,
+    handler: () => renderTermList({ term: getCurrentTerm() })
   },
   {
     pattern: /^#\/term\/(\d+)\/legislator\/(.+)$/,
@@ -117,17 +92,24 @@ export class Router {
 
   updateActiveNav(hash) {
     const navLinks = document.querySelectorAll('.header-nav .nav-link');
+    const curTerm = getCurrentTerm();
+
+    // 動態同步導航列「現任國會」文字與連結
+    const curNav = document.getElementById('nav-current-term');
+    if (curNav) {
+      curNav.textContent = `第 ${curTerm} 屆現任`;
+      curNav.setAttribute('href', `#/term/${curTerm}`);
+    }
+
     navLinks.forEach(link => {
       const href = link.getAttribute('href');
       if (href === '#/' && (hash === '#/' || hash === '')) {
         link.classList.add('active');
       } else if (href === '#/bills' && hash.startsWith('#/bills')) {
         link.classList.add('active');
-      } else if (href === '#/term/11' && (hash === '#/term/11' || hash === '#/term/11/')) {
+      } else if (href === `#/term/${curTerm}` && (hash === `#/term/${curTerm}` || hash === `#/term/${curTerm}/` || hash === '#/current')) {
         link.classList.add('active');
       } else if (href && href.includes('/committees') && hash.includes('/committees')) {
-        link.classList.add('active');
-      } else if (href && href.includes('/graph') && hash.includes('/graph')) {
         link.classList.add('active');
       } else if (href === '#/about' && hash === '#/about') {
         link.classList.add('active');

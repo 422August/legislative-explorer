@@ -1,7 +1,8 @@
 // js/constants.js
 export const API_BASE_URL = 'https://v2.ly.govapi.tw/v2';
 
-export const TERM_DATES = [
+// 基礎已驗證歷史屆次定義 (1–11 屆)
+const BASE_TERM_DATES = [
   { term: 1,  start: '1948-05-08', end: '1993-01-31', seats: 1183, years: '1948–1993', name: '第 1 屆',  description: '行憲首屆「萬年國會」，含歷次增額選舉（至民國80年退職生效）。', historical: true },
   { term: 2,  start: '1993-02-01', end: '1996-01-31', seats: 165,  years: '1993–1996', name: '第 2 屆',  description: '台灣全面改選後首屆國會，三年任期制，確立民主代議機制。' },
   { term: 3,  start: '1996-02-01', end: '1999-01-31', seats: 171,  years: '1996–1999', name: '第 3 屆',  description: '第三屆立法委員，朝野三黨不過半政治生態初現。' },
@@ -14,6 +15,107 @@ export const TERM_DATES = [
   { term: 10, start: '2020-02-01', end: '2024-01-31', seats: 120,  years: '2020–2024', name: '第 10 屆', description: '第十屆立法委員，推動數位國會及議事直播（IVOD全面整合）。' },
   { term: 11, start: '2024-02-01', end: '2028-01-31', seats: 123,  years: '2024–2028', name: '第 11 屆', description: '現任國會屆次，三黨不過半多元競爭格局，持續運作中。', current: true }
 ];
+
+/**
+ * 滾動推算未來屆次 (憲政四年間隔演算法)
+ * 國會減半後每 4 年於 2 月 1 日改選就職
+ */
+function buildRollingTerms() {
+  const terms = [...BASE_TERM_DATES];
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 1-12
+
+  // 計算目前理論年份應達到的最新屆次
+  let calculatedMaxTerm = 11;
+  const yearOffset = currentYear - 2024;
+  if (yearOffset > 0 || (yearOffset === 0 && currentMonth >= 2)) {
+    calculatedMaxTerm = 11 + Math.floor((yearOffset + (currentMonth >= 2 ? 0 : -1)) / 4);
+  }
+
+  // 檢查 localStorage 是否有 API 動態探測到的更新屆次
+  try {
+    const cachedMax = parseInt(localStorage.getItem('ly_discovered_max_term'), 10);
+    if (cachedMax && cachedMax > calculatedMaxTerm) {
+      calculatedMaxTerm = cachedMax;
+    }
+  } catch {}
+
+  // 若推算屆次大於基準第 11 屆，動態滾動生成新屆次項目
+  if (calculatedMaxTerm > 11) {
+    // 將第 11 屆的 current 設為 false
+    terms.find(t => t.term === 11).current = false;
+
+    for (let t = 12; t <= calculatedMaxTerm; t++) {
+      const startYear = 2024 + (t - 11) * 4;
+      const endYear = startYear + 4;
+      terms.push({
+        term: t,
+        start: `${startYear}-02-01`,
+        end: `${endYear}-01-31`,
+        seats: 113,
+        years: `${startYear}–${endYear}`,
+        name: `第 ${t} 屆`,
+        description: `第 ${t} 屆立法委員（單一選區兩票制四年任期，持續運作中）。`,
+        current: t === calculatedMaxTerm
+      });
+    }
+  }
+
+  return terms;
+}
+
+export let TERM_DATES = buildRollingTerms();
+
+/**
+ * 動態新增/確認新屆次 (提供 API 自動探測回調調用)
+ */
+export function registerNewTerm(termNumber) {
+  const t = parseInt(termNumber, 10);
+  if (!t || t <= 0) return;
+
+  const existing = TERM_DATES.find(item => item.term === t);
+  if (!existing) {
+    // 移除舊的 current
+    TERM_DATES.forEach(item => { item.current = false; });
+
+    const startYear = 2008 + (t - 7) * 4;
+    const endYear = startYear + 4;
+    const newTermObj = {
+      term: t,
+      start: `${startYear}-02-01`,
+      end: `${endYear}-01-31`,
+      seats: 113,
+      years: `${startYear}–${endYear}`,
+      name: `第 ${t} 屆`,
+      description: `立法院第 ${t} 屆立法委員名錄與議事公報記錄。`,
+      current: true
+    };
+
+    TERM_DATES.push(newTermObj);
+    TERM_DATES.sort((a, b) => a.term - b.term);
+
+    try {
+      localStorage.setItem('ly_discovered_max_term', String(t));
+    } catch {}
+  }
+}
+
+/**
+ * 取得當前最新在任屆次 (動態計算)
+ */
+export function getCurrentTerm() {
+  const currentObj = TERM_DATES.find(t => t.current);
+  if (currentObj) return currentObj.term;
+  return TERM_DATES[TERM_DATES.length - 1].term;
+}
+
+/**
+ * 取得全部屆次清單
+ */
+export function getTerms() {
+  return TERM_DATES;
+}
 
 export const PARTY_COLORS = {
   '中國國民黨': { color: '#000095', badgeBg: '#e8eaf6', text: '#000095', abbr: '國民黨' },

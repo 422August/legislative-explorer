@@ -1,6 +1,5 @@
-// js/pages/bill-search.js
 import { api } from '../api.js';
-import { TERM_DATES } from '../constants.js';
+import { TERM_DATES, getCurrentTerm } from '../constants.js';
 import { createElement, debounce } from '../utils.js';
 import { createBillItem } from '../components/bill-item.js';
 import { createSkeletonList } from '../components/skeleton.js';
@@ -93,9 +92,9 @@ export async function renderBillSearch({ searchParams = '' }) {
     scopeSelect
   ]);
 
-  // Term Select Filter (Digital archives cover Term 5 to 11; Terms 1-4 are paper/microfilm)
+  // Term Select Filter (Digital archives cover Term 5 onward; Terms 1-4 are paper/microfilm)
   const termOptions = [
-    createElement('option', { value: '', text: '全部屆次 (第5～11屆數位全宗)' }),
+    createElement('option', { value: '', text: `全部屆次 (第 5～${getCurrentTerm()} 屆數位全宗)` }),
     ...TERM_DATES.filter(t => t.term >= 2).sort((a, b) => b.term - a.term).map(t => {
       const isHistoricalOnly = t.term < 5;
       const opt = createElement('option', {

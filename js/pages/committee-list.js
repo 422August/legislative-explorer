@@ -1,10 +1,9 @@
-// js/pages/committee-list.js
 import { createElement, extractCommitteeMembers, getPartyInfo } from '../utils.js';
 import { api } from '../api.js';
-import { TERM_DATES, COMMITTEES_CURRENT, COMMITTEES_SPECIAL, COMMITTEES_HISTORICAL } from '../constants.js';
+import { TERM_DATES, COMMITTEES_CURRENT, COMMITTEES_SPECIAL, COMMITTEES_HISTORICAL, getCurrentTerm } from '../constants.js';
 
-export async function renderCommitteeList({ term = 11 } = {}) {
-  const currentTerm = parseInt(term, 10) || 11;
+export async function renderCommitteeList({ term } = {}) {
+  const currentTerm = parseInt(term, 10) || getCurrentTerm();
   const root = createElement('div', { class: 'committee-page' });
 
   // 1. 麵包屑導覽
@@ -37,12 +36,7 @@ export async function renderCommitteeList({ term = 11 } = {}) {
         const opt = createElement('option', { value: t.term }, `第 ${t.term} 屆 (${t.years})`);
         if (t.term === currentTerm) opt.selected = true;
         return opt;
-      })),
-      createElement('a', {
-        href: `#/term/${currentTerm}/graph`,
-        class: 'btn btn-sm btn-primary',
-        style: 'text-decoration: none;'
-      }, '在關聯圖中檢視組織網絡 ↗')
+      }))
     ])
   ]);
   root.appendChild(header);

@@ -1,11 +1,10 @@
-// js/pages/committee-detail.js
 import { createElement, extractCommitteeMembers, getPartyInfo, formatDate } from '../utils.js';
 import { api } from '../api.js';
 import { createTabs } from '../components/tabs.js';
-import { COMMITTEES_CURRENT, COMMITTEES_SPECIAL, COMMITTEES_HISTORICAL } from '../constants.js';
+import { COMMITTEES_CURRENT, COMMITTEES_SPECIAL, COMMITTEES_HISTORICAL, getCurrentTerm } from '../constants.js';
 
-export async function renderCommitteeDetail({ term = 11, committeeKey = '' } = {}) {
-  const currentTerm = parseInt(term, 10) || 11;
+export async function renderCommitteeDetail({ term, committeeKey = '' } = {}) {
+  const currentTerm = parseInt(term, 10) || getCurrentTerm();
   const decodedKey = decodeURIComponent(committeeKey).trim();
 
   // 1. 查找委員會 Metadata
@@ -44,14 +43,7 @@ export async function renderCommitteeDetail({ term = 11, committeeKey = '' } = {
         createElement('h1', { class: 'committee-main-title' }, committeeName),
         createElement('span', { class: 'tag tag-primary' }, committeeMeta.category === 'special' ? '特種委員會' : '常設委員會'),
         committeeMeta.id ? createElement('span', { class: 'tag', style: 'font-family: var(--font-family-mono);' }, `代號: ${committeeMeta.id}`) : null
-      ].filter(Boolean)),
-      createElement('div', { style: 'display: flex; gap: 8px;' }, [
-        createElement('a', {
-          href: `#/term/${currentTerm}/graph?focus=committee:${encodeURIComponent(committeeName)}`,
-          class: 'btn btn-sm btn-primary',
-          style: 'text-decoration: none;'
-        }, '在關聯圖中檢視本會網絡 ↗')
-      ])
+      ].filter(Boolean))
     ]),
     createElement('div', { class: 'committee-dossier-body' }, [
       createElement('div', { style: 'font-size: var(--font-size-xs); color: var(--color-text-secondary); line-height: 1.6;' }, [

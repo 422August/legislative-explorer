@@ -1,9 +1,31 @@
 // js/utils.js
-import { PARTY_COLORS, TERM_DATES } from './constants.js';
+import { PARTY_COLORS, TERM_DATES, registerNewTerm, getCurrentTerm } from './constants.js';
 
 export function getTermMeta(term) {
   const t = parseInt(term, 10);
-  return TERM_DATES.find(item => item.term === t) || {
+  const found = TERM_DATES.find(item => item.term === t);
+  if (found) return found;
+
+  // 動態推算未知屆次 (若超過已知最大屆次)
+  if (t >= 7) {
+    const startYear = 2008 + (t - 7) * 4;
+    const endYear = startYear + 4;
+    const isCurrent = t === getCurrentTerm();
+    const newMeta = {
+      term: t,
+      name: `第 ${t} 屆`,
+      start: `${startYear}-02-01`,
+      end: `${endYear}-01-31`,
+      years: `${startYear}–${endYear}`,
+      seats: 113,
+      description: `立法院第 ${t} 屆立法委員（單一選區兩票制四年任期）。`,
+      current: isCurrent
+    };
+    registerNewTerm(t);
+    return newMeta;
+  }
+
+  return {
     term: t,
     name: `第 ${t} 屆`,
     years: '',
@@ -12,41 +34,78 @@ export function getTermMeta(term) {
   };
 }
 
-export function normalizeName(name) {
-  if (!name) return '';
-  return String(name)
-    .trim()
-    .replace(/\s+/g, '')
-    .replace(/（/g, '(')
-    .replace(/）/g, ')')
-    .replace(/\n/g, '');
+/**
+ * 智慧萃取政黨精簡簡稱 (2–4 個字)
+ */
+function extractPartyAbbr(fullName = '') {
+  let clean = String(fullName).trim();
+  if (!clean) return '無黨籍';
+  // 移除常見行政地域前綴
+  clean = clean.replace(/^(中華民國|台灣|臺灣)/, '').trim();
+  if (!clean) clean = fullName.trim();
+  if (clean.length <= 4) return clean;
+  // 針對特定複合名稱精簡
+  if (clean.includes('歐巴桑')) return '歐巴桑';
+  if (clean.includes('綠黨')) return '綠黨';
+  if (clean.includes('基進')) return '基進';
+  if (clean.includes('時代力量')) return '時力';
+  return clean.slice(0, 4);
 }
 
-export function extractChineseName(fullName) {
-  if (!fullName) return '';
-  const match = String(fullName).trim().match(/^[\u4e00-\u9fff]+/);
-  return match ? match[0] : fullName;
-}
+/**
+ * 確定性色彩生成器 (依字串 Hash 動態生成和諧高對比之政黨色彩)
+ */
+function generatePartyTheme(partyName) {
+  let hash = 5381;
+  for (let i = 0; i < partyName.length; i++) {
+    hash = ((hash << 5) + hash) + partyName.charCodeAt(i);
+  }
+  const hue = Math.abs(hash) % 360;
 
-export function matchLegislatorName(a, b) {
-  if (!a || !b) return false;
-  const normA = normalizeName(a);
-  const normB = normalizeName(b);
-  if (normA === normB) return true;
-  return extractChineseName(normA) === extractChineseName(normB);
+  // 使用 HSL 計算主色、淺色徽章背景與深色文字
+  const color = `hsl(${hue}, 70%, 38%)`;
+  const badgeBg = `hsl(${hue}, 50%, 94%)`;
+  const text = `hsl(${hue}, 80%, 28%)`;
+  const abbr = extractPartyAbbr(partyName);
+
+  return {
+    color,
+    badgeBg,
+    badgeColor: badgeBg,
+    text,
+    textColor: text,
+    abbr
+  };
 }
 
 export function getPartyInfo(partyName) {
-  if (!partyName) {
-    return { color: '#78909c', badgeBg: '#eceff1', text: '#455a64', abbr: '無黨籍' };
+  if (!partyName || partyName === '無' || partyName === '無黨籍' || partyName === '無黨籍/資料闕如') {
+    return {
+      color: '#78909c',
+      badgeBg: '#eceff1',
+      badgeColor: '#eceff1',
+      text: '#455a64',
+      textColor: '#455a64',
+      abbr: '無黨籍'
+    };
   }
+
   const clean = partyName.trim();
-  return PARTY_COLORS[clean] || {
-    color: '#5c6bc0',
-    badgeBg: '#e8eaf6',
-    text: '#283593',
-    abbr: clean.slice(0, 4)
-  };
+  if (PARTY_COLORS[clean]) {
+    const info = PARTY_COLORS[clean];
+    return {
+      ...info,
+      badgeColor: info.badgeColor || info.badgeBg,
+      textColor: info.textColor || info.text,
+      text: info.text || info.textColor,
+      badgeBg: info.badgeBg || info.badgeColor
+    };
+  }
+
+  // 自動動態生成新政黨視覺主題並快取
+  const generated = generatePartyTheme(clean);
+  PARTY_COLORS[clean] = generated;
+  return generated;
 }
 
 export function normalizeLegislator(raw, termNum) {

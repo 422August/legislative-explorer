@@ -58,17 +58,9 @@ function renderProfile(container, leg, term) {
   const dossier = createElement('div', { className: 'dossier-sheet' });
 
   // Header Bar
-  const headerBar = createElement('div', { className: 'dossier-header-bar', style: 'display: flex; justify-content: space-between; align-items: center;' }, [
-    createElement('div', {}, [
-      createElement('span', { text: `立法院第 ${term} 屆立法委員檔案 ｜ 檔案登記名冊` }),
-      createElement('span', { style: 'font-family: var(--font-family-mono); margin-left: 12px;', text: `屆次號：TERM-${term} / 狀態：${leg.hasLeft ? '已離職' : '現任'}` })
-    ]),
-    createElement('a', {
-      href: `#/term/${term}/graph?focus=legislator:${encodeURIComponent(leg.name)}`,
-      className: 'btn btn-sm',
-      style: 'margin-left: auto; text-decoration: none;',
-      text: '進入關聯圖譜 ↗'
-    })
+  const headerBar = createElement('div', { className: 'dossier-header-bar' }, [
+    createElement('span', { text: `立法院第 ${term} 屆立法委員檔案 ｜ 檔案登記名冊` }),
+    createElement('span', { style: 'font-family: var(--font-family-mono);', text: `屆次號：TERM-${term} / 狀態：${leg.hasLeft ? '已離職' : '現任'}` })
   ]);
   dossier.appendChild(headerBar);
 

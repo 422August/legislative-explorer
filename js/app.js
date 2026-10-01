@@ -1,11 +1,21 @@
-// js/app.js
 import { Router } from './router.js';
 import { showToast } from './components/toast.js';
+import { api } from './api.js';
+import { getCurrentTerm } from './constants.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const appRoot = document.getElementById('app-root');
   const router = new Router(appRoot);
   router.init();
+
+  // 背景非同步滾動探測最新屆次 (若立法院已上線新一屆次則自動擴充)
+  api.detectLatestTerm().then(latest => {
+    const curNav = document.getElementById('nav-current-term');
+    if (curNav) {
+      curNav.textContent = `第 ${latest} 屆現任`;
+      curNav.setAttribute('href', `#/term/${latest}`);
+    }
+  }).catch(() => {});
 
   // Dark Mode Toggle
   const themeToggleBtn = document.getElementById('theme-toggle');

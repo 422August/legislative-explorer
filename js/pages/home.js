@@ -1,8 +1,8 @@
-// js/pages/home.js
-import { TERM_DATES } from '../constants.js';
+import { TERM_DATES, getCurrentTerm } from '../constants.js';
 import { createElement } from '../utils.js';
 
 export function renderHome() {
+  const currentTerm = getCurrentTerm();
   const container = createElement('div', { className: 'home-page' });
 
   // System Header
@@ -10,7 +10,7 @@ export function renderHome() {
     createElement('h1', { className: 'page-title', text: '立法院歷屆任期索引目錄' }),
     createElement('p', {
       className: 'page-desc',
-      text: '收錄民國 37 年（1948 年）行憲第 1 屆至現任第 11 屆之全體立法委員名錄、法律提案、議事會議與出席紀錄。請選擇欲檢索之屆別。'
+      text: `收錄民國 37 年（1948 年）行憲第 1 屆至現任第 ${currentTerm} 屆之全體立法委員名錄、法律提案、議事會議與出席紀錄。請選擇欲檢索之屆別。`
     })
   ]);
   container.appendChild(header);
@@ -19,7 +19,7 @@ export function renderHome() {
   const notice = createElement('div', { className: 'notice-box' }, [
     createElement('div', { className: 'notice-box-title', text: '資料收錄範圍與檢索指引' }),
     createElement('div', {
-      text: '本系統採雙軌資料檢索：第 2 至 11 屆提供開放資料即時 API 連線，包含個人詳細經歷、各會期主提案、連署案及出缺席歷程；第 1 屆（1948–1993）整合立法院國會圖書館歷史問政檔案，收錄行憲代表與歷次增額立委共 1,183 席結構化名錄。'
+      text: `本系統採雙軌資料檢索：第 2 至 ${currentTerm} 屆提供開放資料即時 API 連線，包含個人詳細經歷、各會期主提案、連署案及出缺席歷程；第 1 屆（1948–1993）整合立法院國會圖書館歷史問政檔案，收錄行憲代表與歷次增額立委共 1,183 席結構化名錄。`
     })
   ]);
   container.appendChild(notice);
@@ -77,19 +77,24 @@ export function renderHome() {
   // Quick Entry / Function Shortcuts
   const quickActions = createElement('div', { style: 'margin-bottom: var(--space-5); display: flex; gap: 8px; flex-wrap: wrap;' }, [
     createElement('a', {
-      href: '#/term/11',
+      href: `#/term/${currentTerm}`,
       className: 'btn btn-primary',
-      text: '第 11 屆現任委員名冊'
+      text: `第 ${currentTerm} 屆現任委員名冊`
     }),
     createElement('a', {
-      href: '#/term/11/meetings',
+      href: `#/term/${currentTerm}/committees`,
       className: 'btn',
-      text: '第 11 屆會議議事錄'
+      text: `第 ${currentTerm} 屆委員會分類`
     }),
     createElement('a', {
-      href: '#/bills?term=11',
+      href: `#/term/${currentTerm}/meetings`,
       className: 'btn',
-      text: '第 11 屆法律議案'
+      text: `第 ${currentTerm} 屆會議議事錄`
+    }),
+    createElement('a', {
+      href: `#/bills?term=${currentTerm}`,
+      className: 'btn',
+      text: `第 ${currentTerm} 屆法律議案`
     })
   ]);
   container.appendChild(quickActions);

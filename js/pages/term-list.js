@@ -79,19 +79,11 @@ export async function renderTermList({ term }) {
     subNavLinks.push(
       createElement('a', {
         href: `#/bills?term=${t}`,
-        className: 'btn btn-sm',
+        className: 'btn btn-primary btn-sm',
         text: `檢索第 ${t} 屆法律議案全宗`
       })
     );
   }
-
-  subNavLinks.push(
-    createElement('a', {
-      href: `#/term/${t}/graph`,
-      className: 'btn btn-primary btn-sm',
-      text: `進入國會關聯圖譜 ↗`
-    })
-  );
 
   const subNav = createElement('div', { style: 'margin-bottom: var(--space-4); display: flex; gap: 8px; flex-wrap: wrap;' }, subNavLinks);
   container.appendChild(subNav);

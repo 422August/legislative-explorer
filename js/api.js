@@ -1,9 +1,26 @@
-// js/api.js
-import { API_BASE_URL, DEFAULT_TTL } from './constants.js';
+import { API_BASE_URL, DEFAULT_TTL, getCurrentTerm, registerNewTerm } from './constants.js';
 import { cache } from './cache.js';
 import { normalizeLegislator } from './utils.js';
 
 class ApiClient {
+  async detectLatestTerm() {
+    try {
+      const current = getCurrentTerm();
+      const nextTerm = current + 1;
+      const url = `${API_BASE_URL}/legislators?%E5%B1%86=${nextTerm}&limit=1`;
+      const resp = await fetch(url);
+      if (resp.ok) {
+        const data = await resp.json();
+        if ((data.total && data.total > 0) || (data.legislators && data.legislators.length > 0)) {
+          registerNewTerm(nextTerm);
+          return nextTerm;
+        }
+      }
+    } catch {
+      // 靜默略過探測異常
+    }
+    return getCurrentTerm();
+  }
   async fetchWithRetry(url, options = {}, maxRetries = 2) {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
